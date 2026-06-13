@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarbonSathi — Track. Reduce. Repeat.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#F7F1E4;
+    --paper:#FBF7EE;
+    --forest:#1F3D2B;
+    --forest-deep:#15291C;
+    --sage:#DCE6D2;
+    --terracotta:#BD5E36;
+    --gold:#D9A441;
+    --ink:#2B2620;
+    --ink-soft:#6E665B;
+    --line: rgba(43,38,32,0.12);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; transition-duration:0.01ms !important;}
+  }
+
+  /* ===== Layout shell ===== */
+  .wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+
+  /* ===== Header ===== */
+  header{
+    padding:28px 0 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    font-size:24px;
+    letter-spacing:-0.01em;
+    color:var(--forest);
+  }
+  .logo span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:500;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    border:1px solid var(--terracotta);
+    border-radius:999px;
+    padding:4px 10px;
+  }
+  nav{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* ===== Hero ===== */
+  .hero{
+    padding:64px 0 40px;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:48px;
+    align-items:center;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    margin:0 0 14px;
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(34px,5vw,56px);
+    line-height:1.08;
+    margin:0 0 18px;
+    color:var(--forest-deep);
+  }
+  h1 em{
+    font-style:italic;
+    color:var(--terracotta);
+  }
+  .lede{
+    font-size:16px;
+    line-height:1.65;
+    color:var(--ink-soft);
+    max-width:46ch;
+    margin:0 0 28px;
+  }
+  .cta-row{display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14px;
+    padding:13px 22px;
+    border-radius:10px;
+    border:1px solid var(--forest);
+    cursor:pointer;
+    transition:transform .15s ease, background .2s ease, color .2s ease;
+  }
+  .btn-primary{background:var(--forest); color:var(--paper);}
+  .btn-primary:hover{background:var(--forest-deep); transform:translateY(-1px);}
+  .btn-ghost{background:transparent; color:var(--forest);}
+  .btn-ghost:hover{background:var(--sage); transform:translateY(-1px);}
+
+  /* ===== Signature: Carbon Dial ===== */
+  .dial-card{
+    background:var(--forest);
+    border-radius:24px;
+    padding:32px;
+    color:var(--paper);
+    position:relative;
+    overflow:hidden;
+  }
+  .dial-card::before{
+    content:"";
+    position:absolute;
+    inset:-40% -40% auto auto;
+    width:220px; height:220px;
+    background:radial-gradient(circle, rgba(217,164,65,0.35), transparent 70%);
+    border-radius:50%;
+  }
+  .dial-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:var(--sage);
+    margin:0 0 8px;
+  }
+  .dial-wrap{
+    position:relative;
+    width:100%;
+    max-width:260px;
+    margin:18px auto 8px;
+  }
+  .dial-wrap svg{display:block; width:100%;}
+  .dial-track{stroke:rgba(255,255,255,0.12); fill:none; stroke-width:14;}
+  .dial-fill{
+    stroke:var(--gold);
+    fill:none;
+    stroke-width:14;
+    stroke-linecap:round;
+    transform-origin:center;
+    transform:rotate(-90deg);
+    transition:stroke-dashoffset 1s cubic-bezier(.4,0,.2,1);
+  }
+  .dial-center{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+  }
+  .dial-number{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:46px;
+    line-height:1;
+    letter-spacing:-0.02em;
+  }
+  .dial-unit{
+    font-size:12px;
+    color:var(--sage);
+    margin-top:4px;
+    letter-spacing:0.04em;
+  }
+  .dial-foot{
+    display:flex; justify-content:space-between;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--sage);
+    margin-top:14px;
+    padding-top:14px;
+    border-top:1px solid rgba(255,255,255,0.14);
+  }
+  .dial-foot b{color:var(--paper); font-size:13px;}
+
+  /* ===== Section heads ===== */
+  .section{padding:48px 0;}
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom:28px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:14px;
+  }
+  .section-head h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0;
+    color:var(--forest-deep);
+  }
+  .section-head .tag{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+
+  /* ===== Log grid ===== */
+  .log-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+  }
+  .log-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:20px 16px;
+    text-align:left;
+    cursor:pointer;
+    transition:border-color .2s ease, transform .15s ease, box-shadow .2s ease;
+    font-family:'Inter',sans-serif;
+  }
+  .log-card:hover{
+    border-color:var(--forest);
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(31,61,43,0.08);
+  }
+  .log-card:focus-visible{outline:2px solid var(--terracotta); outline-offset:2px;}
+  .log-icon{font-size:26px; margin-bottom:10px; display:block;}
+  .log-name{font-weight:600; font-size:14px; margin-bottom:4px;}
+  .log-meta{font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft);}
+  .log-card.active{
+    background:var(--forest);
+    border-color:var(--forest);
+    color:var(--paper);
+  }
+  .log-card.active .log-meta{color:var(--sage);}
+
+  /* ===== Two column: tip + trend ===== */
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+  }
+  .panel{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px;
+  }
+  .panel h3{
+    font-family:'Fraunces',serif;
+    font-size:18px;
+    font-weight:600;
+    margin:0 0 6px;
+    color:var(--forest-deep);
+  }
+  .panel p{
+    font-size:14px;
+    line-height:1.6;
+    color:var(--ink-soft);
+    margin:0;
+  }
+  .tip-badge{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--terracotta);
+    background:rgba(189,94,54,0.1);
+    border-radius:999px;
+    padding:4px 10px;
+    margin-bottom:10px;
+  }
+
+  /* mini bar chart */
+  .bars{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    height:120px;
+    margin-top:16px;
+  }
+  .bar-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    height:100%;
+    justify-content:flex-end;
+  }
+  .bar{
+    width:100%;
+    border-radius:6px 6px 2px 2px;
+    background:var(--sage);
+    transition:height .8s cubic-bezier(.4,0,.2,1);
+  }
+  .bar.today{background:var(--gold);}
+  .bar-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+  }
+
+  /* ===== Community pulse ===== */
+  .pulse-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 0;
+    border-bottom:1px solid var(--line);
+    font-size:14px;
+  }
+  .pulse-row:last-child{border-bottom:none;}
+  .pulse-left{display:flex; align-items:center; gap:14px;}
+  .pulse-rank{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    width:24px;
+  }
+  .pulse-name{font-weight:600;}
+  .pulse-place{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+  .pulse-score{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    color:var(--forest);
+  }
+  .pulse-row.you{
+    background:rgba(217,164,65,0.12);
+    border-radius:10px;
+    padding:14px 12px;
+    border-bottom:1px solid transparent;
+  }
+
+  /* ===== Footer ===== */
+  footer{
+    border-top:1px solid var(--line);
+    padding:28px 0 50px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.04em;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width:860px){
+    .hero{grid-template-columns:1fr; gap:36px; padding-top:40px;}
+    .log-grid{grid-template-columns:repeat(2,1fr);}
+    .grid-2{grid-template-columns:1fr;}
+    footer{flex-direction:column; gap:8px; text-align:center;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="logo">CarbonSathi <span>Beta · India</span></div>
+    <nav>Day 1 of your tracker</nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Personal Carbon Companion</p>
+      <h1>Know your footprint.<br>Shrink it, <em>one choice</em> at a time.</h1>
+      <p class="lede">CarbonSathi turns everyday decisions — your bus ride, your meal, your fan left running — into one simple number. No jargon, no guilt. Just a daily nudge toward less.</p>
+      <div class="cta-row">
+        <button class="btn btn-primary" onclick="document.getElementById('log').scrollIntoView()">Log today's actions</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('pulse').scrollIntoView()">See community pulse</button>
+      </div>
+    </div>
+
+    <div class="dial-card">
+      <p class="dial-label">Today's Footprint</p>
+      <div class="dial-wrap">
+        <svg viewBox="0 0 200 200">
+          <circle class="dial-track" cx="100" cy="100" r="86"/>
+          <circle id="dialFill" class="dial-fill" cx="100" cy="100" r="86"
+                  stroke-dasharray="540.4" stroke-dashoffset="540.4"/>
+        </svg>
+        <div class="dial-center">
+          <div class="dial-number" id="scoreNum">0</div>
+          <div class="dial-unit">kg CO₂e today</div>
+        </div>
+      </div>
+      <div class="dial-foot">
+        <div>India avg/day<br><b>6.5 kg</b></div>
+        <div style="text-align:right">Your status<br><b id="statusLabel">Not started</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOG ACTIONS -->
+  <section class="section" id="log">
+    <div class="section-head">
+      <h2>Log today's actions</h2>
+      <span class="tag">Tap what applies — updates the dial live</span>
+    </div>
+    <div class="log-grid">
+      <button class="log-card" data-impact="2.1" onclick="toggleCard(this)">
+        <span class="log-icon">🚌</span>
+        <div class="log-name">Took the bus</div>
+        <div class="log-meta">+2.1 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="6.8" onclick="toggleCard(this)">
+        <span class="log-icon">🏍️</span>
+        <div class="log-name">Rode a two-wheeler</div>
+        <div class="log-meta">+6.8 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="3.4" onclick="toggleCard(this)">
+        <span class="log-icon">🍛</span>
+        <div class="log-name">Meat meal</div>
+        <div class="log-meta">+3.4 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="0.9" onclick="toggleCard(this)">
+        <span class="log-icon">🥗</span>
+        <div class="log-name">Veg meal</div>
+        <div class="log-meta">+0.9 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="1.2" onclick="toggleCard(this)">
+        <span class="log-icon">💡</span>
+        <div class="log-name">Fan/light left on</div>
+        <div class="log-meta">+1.2 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="1.8" onclick="toggleCard(this)">
+        <span class="log-icon">🧺</span>
+        <div class="log-name">Laundry machine wash</div>
+        <div class="log-meta">+1.8 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="0.4" onclick="toggleCard(this)">
+        <span class="log-icon">🚶</span>
+        <div class="log-name">Walked/cycled errand</div>
+        <div class="log-meta">+0.4 kg CO₂e</div>
+      </button>
+      <button class="log-card" data-impact="2.6" onclick="toggleCard(this)">
+        <span class="log-icon">🛍️</span>
+        <div class="log-name">Online delivery order</div>
+        <div class="log-meta">+2.6 kg CO₂e</div>
+      </button>
+    </div>
+  </section>
+
+  <!-- TIP + TREND -->
+  <section class="section">
+    <div class="grid-2">
+      <div class="panel">
+        <span class="tip-badge">Today's micro-action</span>
+        <h3 id="tipTitle">Pick one thing above to begin</h3>
+        <p id="tipBody">CarbonSathi reads your choices and suggests the single smallest swap that makes the biggest difference — never a long list, just one doable step.</p>
+      </div>
+      <div class="panel">
+        <h3>This week</h3>
+        <p>Your daily footprint vs. your 7-day average.</p>
+        <div class="bars" id="barsRow">
+          <div class="bar-col"><div class="bar" style="height:55%"></div><div class="bar-label">Mon</div></div>
+          <div class="bar-col"><div class="bar" style="height:70%"></div><div class="bar-label">Tue</div></div>
+          <div class="bar-col"><div class="bar" style="height:40%"></div><div class="bar-label">Wed</div></div>
+          <div class="bar-col"><div class="bar" style="height:62%"></div><div class="bar-label">Thu</div></div>
+          <div class="bar-col"><div class="bar" style="height:48%"></div><div class="bar-label">Fri</div></div>
+          <div class="bar-col"><div class="bar" style="height:35%"></div><div class="bar-label">Sat</div></div>
+          <div class="bar-col"><div class="bar today" id="todayBar" style="height:2%"></div><div class="bar-label">Today</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUNITY PULSE -->
+  <section class="section" id="pulse">
+    <div class="section-head">
+      <h2>Community pulse</h2>
+      <span class="tag">Lowest footprint, last 7 days · sample data</span>
+    </div>
+    <div class="panel">
+      <div class="pulse-row">
+        <div class="pulse-left">
+          <span class="pulse-rank">01</span>
+          <div><div class="pulse-name">Lakshmi R.</div><div class="pulse-place">Warangal, Telangana</div></div>
+        </div>
+        <div class="pulse-score">3.1 kg/day</div>
+      </div>
+      <div class="pulse-row">
+        <div class="pulse-left">
+          <span class="pulse-rank">02</span>
+          <div><div class="pulse-name">Arjun M.</div><div class="pulse-place">Hyderabad, Telangana</div></div>
+        </div>
+        <div class="pulse-score">3.6 kg/day</div>
+      </div>
+      <div class="pulse-row">
+        <div class="pulse-left">
+          <span class="pulse-rank">03</span>
+          <div><div class="pulse-name">Fathima S.</div><div class="pulse-place">Kochi, Kerala</div></div>
+        </div>
+        <div class="pulse-score">4.0 kg/day</div>
+      </div>
+      <div class="pulse-row you">
+        <div class="pulse-left">
+          <span class="pulse-rank">—</span>
+          <div><div class="pulse-name">You</div><div class="pulse-place">Jagtial, Telangana</div></div>
+        </div>
+        <div class="pulse-score" id="yourPulseScore">0.0 kg/day</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>CarbonSathi · Built for Virtual: PromptWars, Challenge 3</div>
+    <div>Design every action like it scales to a billion people.</div>
+  </footer>
+</div>
+
+<script>
+  const CIRC = 540.4; // 2 * PI * 86
+  const MAX_SCORE = 16; // dial maxes out around 16kg for visual range
+
+  const tips = {
+    "Rode a two-wheeler": {t:"Swap one ride this week for the bus", b:"A two-wheeler trip emits over 3x more than the same trip by bus. Swapping just one ride a week saves roughly 4.7 kg CO₂e — about the same as charging your phone for 2 months."},
+    "Meat meal": {t:"Try one veg meal tomorrow", b:"Switching a single meat meal to vegetarian saves about 2.5 kg CO₂e — equivalent to skipping a 12 km car ride."},
+    "Fan/light left on": {t:"Set a 1-hour auto-off reminder", b:"Appliances left running when you step out quietly add up. A simple reminder habit can cut this category by half within a week."},
+    "Laundry machine wash": {t:"Wait for a full load next time", b:"Running the machine at half-load roughly doubles the carbon cost per garment. One full load instead of two halves saves about 0.9 kg CO₂e."},
+    "Online delivery order": {t:"Bundle your next two orders into one", b:"Combining deliveries cuts per-item transport emissions significantly — small habit, real savings over a month."},
+    "Took the bus": {t:"Nice — you're already below the city average", b:"Public transport is one of the highest-leverage daily choices. Keep this up and try pairing it with a veg meal today for an even lower score."},
+    "Veg meal": {t:"Great pick — now check your commute", b:"Your food choice today is already low-impact. Your commute is usually the next biggest lever — see if today's transport can be just as light."},
+    "Walked/cycled errand": {t:"You just offset someone else's two-wheeler trip", b:"Active transport for short errands is close to zero-emission. If this becomes a habit 3x/week, it adds up to real, measurable change."}
+  };
+
+  let total = 0;
+
+  function toggleCard(el){
+    const impact = parseFloat(el.dataset.impact);
+    const isActive = el.classList.toggle('active');
+    total += isActive ? impact : -impact;
+    total = Math.max(0, total);
+    updateDial();
+    updateTip(el.querySelector('.log-name').textContent, isActive);
+    updatePulse();
+  }
+
+  function updateDial(){
+    const pct = Math.min(total / MAX_SCORE, 1);
+    const offset = CIRC - (CIRC * pct);
+    document.getElementById('dialFill').style.strokeDashoffset = offset;
+    document.getElementById('scoreNum').textContent = total.toFixed(1);
+
+    const statusEl = document.getElementById('statusLabel');
+    let status, color;
+    if(total === 0){ status = "Not started"; color = "var(--gold)"; }
+    else if(total <= 4){ status = "Excellent"; color = "#7FBF7F"; }
+    else if(total <= 8){ status = "Good"; color = "var(--gold)"; }
+    else { status = "High — act now"; color = "var(--terracotta)"; }
+    statusEl.textContent = status;
+    document.getElementById('dialFill').style.stroke = color;
+
+    const todayBar = document.getElementById('todayBar');
+    const barPct = Math.min((total / MAX_SCORE) * 100, 100);
+    todayBar.style.height = Math.max(barPct, 2) + "%";
+  }
+
+  function updateTip(name, isActive){
+    if(!isActive){
+      if(total === 0){
+        document.getElementById('tipTitle').textContent = "Pick one thing above to begin";
+        document.getElementById('tipBody').textContent = "CarbonSathi reads your choices and suggests the single smallest swap that makes the biggest difference — never a long list, just one doable step.";
+      }
+      return;
+    }
+    const tip = tips[name];
+    if(tip){
+      document.getElementById('tipTitle').textContent = tip.t;
+      document.getElementById('tipBody').textContent = tip.b;
+    }
+  }
+
+  function updatePulse(){
+    document.getElementById('yourPulseScore').textContent = total.toFixed(1) + " kg/day";
+  }
+
+  updateDial();
+</script>
+
+</body>
+</html>
